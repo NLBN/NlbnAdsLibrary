@@ -1,6 +1,8 @@
 package com.nlbnadslibrary;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this,MainActivity2.class));
             }
         });
-
+        takePermission();
 
 
         findViewById(R.id.btnClickInter).setOnClickListener(new View.OnClickListener() {
@@ -165,6 +167,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });*/
+    }
+
+    private void takePermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
     }
 
     private void loadAdsNative(){

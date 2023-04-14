@@ -18,6 +18,7 @@ import java.util.List;
 public class Splash extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
     public static String PRODUCT_ID_MONTH = "android.test.purchased";
+    public InterCallback interCallback;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +29,22 @@ public class Splash extends AppCompatActivity {
        Admob.getInstance().setDisableAdResumeWhenClickAds(true);
         Admob.getInstance().setOpenEventLoadTimeLoadAdsSplash(true);
         Admob.getInstance().setOpenEventLoadTimeShowAdsInter(true);
+        Admob.getInstance().setOpenActivityAfterShowInterAds(false);
+
+        interCallback = new InterCallback(){
+            @Override
+            public void onAdClosed() {
+                startActivity(new Intent(Splash.this,MainActivity.class));
+                finish();
+            }
+
+            @Override
+            public void onAdFailedToLoad(LoadAdError i) {
+                super.onAdFailedToLoad(i);
+                startActivity(new Intent(Splash.this,MainActivity.class));
+                finish();
+            }
+        };
         // Admob
         AppPurchase.getInstance().setBillingListener(new BillingListener() {
             @Override
@@ -35,20 +52,7 @@ public class Splash extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Admob.getInstance().loadSplashInterAds(Splash.this,"ca-app-pub-3940256099942544/1033173712",25000,5000, new InterCallback(){
-                            @Override
-                            public void onAdClosed() {
-                                startActivity(new Intent(Splash.this,MainActivity.class));
-                                finish();
-                            }
-
-                            @Override
-                            public void onAdFailedToLoad(LoadAdError i) {
-                                super.onAdFailedToLoad(i);
-                                startActivity(new Intent(Splash.this,MainActivity.class));
-                                finish();
-                            }
-                        });
+                        Admob.getInstance().loadSplashInterAds2(Splash.this,"ca-app-pub-3940256099942544/1033173712",2000, interCallback);
                     }
                 });
             }
@@ -63,5 +67,11 @@ public class Splash extends AppCompatActivity {
         List<String> listSubsId = new ArrayList<>();
         AppPurchase.getInstance().initBilling(getApplication(),listINAPId,listSubsId);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Admob.getInstance().onCheckShowSplashWhenFail(this,interCallback,500);
     }
 }
